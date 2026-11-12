@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* accent colour (Settings > Profile changes these live) */
+:root {
+  --brand: 0 189 171;
+  --brand-hover: 0 166 150;
+  --brand-text: 0 153 139;
+  --brand-wash: 216 250 245;
+  --brand-fg: 255 255 255;
+}
+
+html, body { height: 100%; }
+body { @apply bg-page text-ink antialiased; letter-spacing: -0.011em; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+/* shared form look for the settings and edit forms. in the components layer
+   so width utilities (w-28, flex-1) on the same element still win */
+@layer components {
+  .field { @apply w-full rounded-lg border border-line bg-white px-3 py-2 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20; }
+  .field-label { @apply mb-1 block text-[13px] text-muted; }
+}
+
+/* ------------------------------------------------------------------ Dremedia site
+   Colours from the Dremedia logo: charcoal, white and silver grey.
+   .dm wraps the site (app/ugc). <html data-dm-theme="light" | "dark" | "auto">
+   is set before the page paints (components/ugc/theme.tsx); auto, or no
+   setting, follows the phone or computer's own day/night setting. */
+.dm {
+  --dm-bg: 244 244 242;
+  --dm-surface: 255 255 255;
+  --dm-surface2: 236 236 234;
+  --dm-line: 222 222 219;
+  --dm-ink: 17 17 17;
+  --dm-muted: 102 102 102;
+  --dm-silver: 140 140 140;
+  --dm-accent: 17 17 17;
+  --dm-accent-fg: 255 255 255;
+  --dm-good: 21 128 61;
+  --dm-warn: 194 65 12;
+  --dm-bad: 185 28 28;
+  color-scheme: light;
+}
+html[data-dm-theme="dark"] .dm {
+  --dm-bg: 10 10 11;
+  --dm-surface: 20 20 22;
+  --dm-surface2: 31 31 34;
+  --dm-line: 46 46 50;
+  --dm-ink: 245 245 245;
+  --dm-muted: 163 163 168;
+  --dm-silver: 166 166 166;
+  --dm-accent: 255 255 255;
+  --dm-accent-fg: 10 10 11;
+  --dm-good: 74 222 128;
+  --dm-warn: 251 146 60;
+  --dm-bad: 248 113 113;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  html:not([data-dm-theme="light"]) .dm {
+    --dm-bg: 10 10 11;
+    --dm-surface: 20 20 22;
+    --dm-surface2: 31 31 34;
+    --dm-line: 46 46 50;
+    --dm-ink: 245 245 245;
+    --dm-muted: 163 163 168;
+    --dm-silver: 166 166 166;
+    --dm-accent: 255 255 255;
+    --dm-accent-fg: 10 10 11;
+    --dm-good: 74 222 128;
+    --dm-warn: 251 146 60;
+    --dm-bad: 248 113 113;
+    color-scheme: dark;
+  }
+}
+/* the page behind the site matches it while it loads */
+html[data-dm-theme="dark"] body { background: rgb(10 10 11); }
+html[data-dm-theme="light"] body, html[data-dm-theme="auto"] body { background: rgb(244 244 242); }
+@media (prefers-color-scheme: dark) {
+  html[data-dm-theme="auto"] body { background: rgb(10 10 11); }
+}
+
+/* the logo comes in two inks: charcoal on light pages, white on dark pages */
+.dm .logo-on-dark { display: none; }
+html[data-dm-theme="dark"] .dm .logo-on-dark { display: block; }
+html[data-dm-theme="dark"] .dm .logo-on-light { display: none; }
+@media (prefers-color-scheme: dark) {
+  html:not([data-dm-theme="light"]) .dm .logo-on-dark { display: block; }
+  html:not([data-dm-theme="light"]) .dm .logo-on-light { display: none; }
+}
+
+@layer components {
+  .dm-field { @apply w-full rounded-xl border border-dm-line bg-dm-surface px-3.5 py-2.5 text-sm text-dm-ink outline-none transition placeholder:text-dm-muted focus:border-dm-ink/40 focus:ring-2 focus:ring-dm-ink/10; }
+  .dm-label { @apply mb-1 block text-[12px] font-medium text-dm-muted; }
+  .dm-btn { @apply inline-flex h-10 items-center justify-center gap-1.5 rounded-full px-4 text-[14px] font-medium transition disabled:opacity-50; }
+  .dm-btn-primary { @apply dm-btn bg-dm-accent text-dm-accent-fg hover:opacity-90; }
+  .dm-btn-ghost { @apply dm-btn border border-dm-line bg-dm-surface text-dm-ink hover:bg-dm-surface2; }
+  .dm-panel { @apply rounded-2xl border border-dm-line bg-dm-surface; }
+}
+
+/* ------------------------------------------------------------------ Jarvis
+   The ring: still when idle, breathing while it thinks, rippling while it
+   talks or listens. No movement at all for people who've asked for less. */
+@keyframes jarvis-breathe { 0%, 100% { transform: scale(0.82); opacity: 0.55; } 50% { transform: scale(1); opacity: 1; } }
+@keyframes jarvis-ripple { 0% { transform: scale(0.7); opacity: 0.9; } 100% { transform: scale(1.25); opacity: 0; } }
+@keyframes jarvis-spin { to { transform: rotate(360deg); } }
+.jarvis-orb[data-state="thinking"] .jarvis-orb-ring { border-style: dashed; animation: jarvis-spin 2.4s linear infinite; }
+.jarvis-orb[data-state="thinking"] .jarvis-orb-core { animation: jarvis-breathe 1.2s ease-in-out infinite; }
+.jarvis-orb[data-state="speaking"] .jarvis-orb-ring2, .jarvis-orb[data-state="listening"] .jarvis-orb-ring2 { animation: jarvis-ripple 1.1s ease-out infinite; }
+.jarvis-orb[data-state="speaking"] .jarvis-orb-core { animation: jarvis-breathe 0.5s ease-in-out infinite; }
+.jarvis-orb[data-state="listening"] .jarvis-orb-core { background: rgb(var(--dm-bad)); animation: jarvis-breathe 0.9s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .jarvis-orb * { animation: none !important; }
+}

@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Jarvis Link (Dre Media)",
+  "version": "1.0.0",
+  "description": "Lets your Dre Media dashboard read your own Bounty earnings, account numbers and unread Discord messages from the pages you're signed in to. It only reads.",
+  "permissions": ["storage", "tabs", "scripting", "alarms"],
+  "host_permissions": [
+    "https://*.bounty.app/*",
+    "https://www.tiktok.com/*",
+    "https://www.instagram.com/*",
+    "https://studio.youtube.com/*",
+    "https://www.youtube.com/*",
+    "https://discord.com/*"
+  ],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    {
+      "matches": ["https://*.github.io/*", "http://localhost/*", "http://127.0.0.1/*"],
+      "js": ["bridge.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "action": { "default_popup": "popup.html", "default_title": "Jarvis Link" },
+  "icons": { "16": "icon16.png", "48": "icon48.png", "128": "icon128.png" }
+}
