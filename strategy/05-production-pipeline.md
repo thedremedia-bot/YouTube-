@@ -1,7 +1,7 @@
 # 5. Production pipeline
 
-This is what I can and cannot produce in this workspace. Nothing has been
-rendered yet; rendering starts after you approve the strategy.
+This is what I can and cannot produce in this workspace. Video 1 was made this
+way; finished videos are in the `videos/` folder.
 
 ## What I can produce
 
@@ -9,7 +9,7 @@ rendered yet; rendering starts after you approve the strategy.
 |---|---|---|
 | 1080×1920 MP4, H.264 + AAC, 30 fps | Frames drawn in code, encoded with ffmpeg | ffmpeg is installed |
 | Original animated visuals | Custom motion graphics: shapes, scale comparisons, counters, maps, illustrated icons, camera moves | Available |
-| Voiceover | Open-source neural text-to-speech (Piper or Kokoro) | The package downloads here; I have not yet rendered a test voice. I will check the licence of the specific voice allows commercial use before choosing it. |
+| Voiceover | Open-source neural text-to-speech (Piper or Kokoro) | Working. Video 1 uses the Kokoro model (Apache 2.0 licence, commercial use allowed). |
 | Word-timed captions burned in | Generated from the script and voice timing | Available |
 | Music and sound effects | Synthesised from scratch for each video | Available; fully original, so no licence is needed |
 | Covers, profile picture, banner | Drawn in code, exported as PNG | Available |
@@ -20,7 +20,6 @@ rendered yet; rendering starts after you approve the strategy.
 - **No generative image or video model.** I cannot produce photorealistic AI footage or AI-painted cartoon characters in this workspace. Visuals will be designed motion graphics and flat illustration. This suits the chosen niche and avoids the AI-footage policy risk, but it is a different look from AI-video channels. If you later want AI imagery, you would need to provide access to an image or video generation service.
 - **No human voice actor.** The voice is synthetic. If the test voice is not good enough for you, the upgrade is a paid voice service, or recording the scripts yourself.
 - **No posting.** I cannot log in to or publish on your accounts.
-- **Videos are large files.** They will be handed to you as downloads, not stored in this code repository.
 
 If any step fails on a given day, I will say which step, deliver the closest
 usable version, and not describe a video as finished when it is not.
