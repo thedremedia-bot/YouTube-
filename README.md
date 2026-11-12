@@ -1,12 +1,74 @@
-# Dremedia
+# Dre Media
 
-The Dremedia UGC workflow: one dashboard for brand deals, ideas, filming, editing,
-posting and accounts, plus seven Claude bots (Ideas, Formats, Repurpose, Inbox, Accounts, Posting,
-Connector) that do the daily research in your Chrome and put what they find on
-the site.
+Andre's UGC workflow in one place: **Jarvis**, an assistant that tells you what
+to do each day and does jobs for you; an **editor that edits by itself**; the
+viral-video library; the growth plan from $6,000 to $20,000 a month; and the
+original dashboard for brand deals, ideas, filming, posting and accounts.
 
-Built on the free [ugc-dashboard-template](https://github.com/ollysungg/ugc-dashboard-template)
-(Next.js 14 + Tailwind), with everything made editable.
+It's a static site (Next.js 14 + Tailwind). Everything you type is saved in
+your own browser, and your video never leaves your device.
+
+## Jarvis
+
+Open **Jarvis** (`/ugc/jarvis/`, first in the menu and at the top of the
+dashboard). The round button in the corner of every page opens the same
+conversation.
+
+| Part | What it does |
+| --- | --- |
+| **Briefing** | Built fresh every time you open it, from what's on the dashboard: what needs you now, today's videos to film (with their hooks), who to answer, deadlines, your list, the money against your goal and one move toward the next stage. **Brief me** reads it out loud. Tick things off right there. |
+| **The conversation** | Type or talk. With a Claude key, Jarvis is Claude with hands on your dashboard and the web: it reads your numbers, adds to your list, logs earnings, saves videos to copy, drafts messages and scripts, researches brands and the campaign-manager path, and tells you where it put things. Without a key it understands plain commands ("what's my day", "add task …", "bounty 412.50", "find viral videos", "check bounty", "open the editor"). |
+| **Your list / Jobs for Jarvis** | Your list is what only you can do. A job for Jarvis is something it runs when you press **Run** (research, writing, finding, planning) and writes the result back. |
+| **What Jarvis does by itself** | Routines that run the first time the site is open each day: morning briefing (sent to your Discord if a webhook is connected), today's videos to copy, Bounty earnings, account numbers, unread messages, and brand outreach on Mondays. These are free. Routines you add yourself run with Claude. |
+| **Videos to copy today** | The fastest-growing videos per campaign from the library, different ones each day, plus this week's YouTube Shorts when a YouTube key is connected. Jarvis can hunt the web for brand-new ones. |
+
+Limits Jarvis keeps: it never posts, comments, follows, messages anyone as
+you, pays or withdraws. It drafts; you send. What it reads from web pages and
+messages is treated as information, never as instructions.
+
+## Connect (`/ugc/connect/`)
+
+Everything is optional; each connection says what it gives you and shows
+whether it's working. Keys and tokens stay in this browser only and are never
+part of a backup file.
+
+| Connection | What you get | What it needs |
+| --- | --- | --- |
+| **Claude** | The full assistant, web research, AI titles, mistake-cutting and reading a reference video's look in the editor | A Claude API key from console.anthropic.com (billed by use; separate from a Claude.ai subscription) |
+| **Jarvis Link** (Chrome extension) | Bounty balance and total, TikTok and Instagram numbers, unread Discord: read from the pages you're signed in to | Install once from the Connect page (below) |
+| **YouTube** | Subscribers, views and newest videos every day; viral Shorts per campaign | A free YouTube Data API key and your channel name |
+| **Instagram** | Followers and posts through Jarvis Link, or per-reel views with your own Instagram API token | Your handle, or a token |
+| **TikTok** | Followers, likes and recent views through Jarvis Link (TikTok's own API is only for approved companies) | Your handle |
+| **Discord** | Your briefing posted to your own channel; unread DMs and mentions filed in the Inbox | A webhook link; Jarvis Link for reading |
+| **Pexels** | Sharper stock photos in the editor | A free key (the editor works without it) |
+
+### Jarvis Link, the Chrome extension (`extension/`)
+
+It opens a page in a background tab of your own Chrome, reads what's on it and
+closes the tab. It only reads: it can't click, type, post or withdraw, it only
+opens Bounty, TikTok, Instagram, YouTube and Discord, and it only answers to
+dashboards you've paired.
+
+1. On the Connect page press **Download Jarvis Link** and unzip it.
+2. In Chrome open `chrome://extensions`, switch on **Developer mode**, press
+   **Load unpacked** and choose the `jarvis-link` folder.
+3. Refresh the dashboard. If Connect doesn't say "connected", click the
+   extension's icon and press **Pair this site**.
+4. The first time, press **Read Bounty now** on Connect and tell Jarvis which
+   amount is your balance and which is your total. It remembers.
+
+In the extension's popup, **Open my dashboard at 08:00** makes the day's
+routines run by themselves each morning while Chrome is running.
+
+## Growth (`/ugc/growth/`)
+
+A calculator (videos a day, typical views, pay per video, retainers, managed
+brands, costs) that shows what a month comes to, three stages ($10,000,
+$15,000, $20,000) each with one way the numbers get there and the moves to
+make, the path to becoming a campaign manager (Jarvis researches the current
+market with sources and saves it there), and a brand outreach board: brands
+already buying UGC from your library, drafts written from your own numbers,
+follow-up dates that show up in the morning briefing.
 
 ## Run it
 
@@ -23,8 +85,8 @@ Open http://localhost:3000.
 ## Your website
 
 The site is published straight from this repo with GitHub Pages, at
-**https://andrechizingaugc-spec.github.io/Dremedia/**. Every change pushed to
-`main` republishes it automatically (`.github/workflows/pages.yml`, about 2
+`https://<your-github-name>.github.io/<this-repo's-name>/`. Every change pushed
+to `main` republishes it automatically (`.github/workflows/pages.yml`, about 2
 minutes; progress is on the repo's **Actions** tab).
 
 One-time setup (you only do this once):
@@ -133,7 +195,7 @@ flashes the wrong colours.
 
 | Page | What's on it |
 | --- | --- |
-| **Editor** (`/ugc/editor/`) | A video editor that runs in the browser (nothing is uploaded, the original file is never changed): trim, crop to 9:16 / 4:5 / 1:1 / 16:9, text on screen with safe-zone guides, volume and speed, and **hook versions** (one saved video per hook). It checks the edit before saving and measures every saved video (length and size) before offering the download. **Copy a reference video** puts a library video's hook (app swapped for yours), length and your call to action onto your clip; video pages link here with "Cut mine like this in the editor". **Tell the editor what to do** carries out plain-words steps ("cut the first 2 seconds", "hook: …", "versions: a \| b") and lists what it did and what it couldn't read. It also applies an **edit plan** (JSON) from the Editor agent, checking every number first. The Editor agent (Claude in Chrome) works this page like a person: studies the reference, steps through the clip, cuts, watches it back, saves and checks. |
+| **Editor** (`/ugc/editor/`) | A video editor that runs in the browser (nothing is uploaded, the original file is never changed). **Auto edit** does the job in one press: it listens to the clip, **cuts the dead air** between what you say, **writes the captions** (a speech model that runs on your device; it downloads once), puts a **title** on, and can add **pictures from the internet** and (with a Claude key) cut mistakes and retakes. **Copy a reference video**: give it a video file and it copies that video's shape, length and how tight its pauses are onto your clip; with a Claude key it also reads the reference's title, caption style, pictures and call to action from its frames and does the same to yours. Or pick a library video for its hook, length and call to action. Everything it did is listed and can be changed by hand: cuts (put any back, or cut a part out yourself), caption look, position and words, title and text, pictures, trim, crop to 9:16 / 4:5 / 1:1 / 16:9, volume, speed and **hook versions** (one saved video per hook). **Tell the editor what to do** takes plain words ("cut the dead air", "captions bottom", "title: …", "picture of a laptop at 6 for 3"). It checks the edit before saving and measures every saved video before offering the download. |
 | **Agents** (`/ugc/agents/`) | Seven Claude prompts, one job each: Viral finder, Batch recording, Editor, Repurpose, Scheduler, Warm-up and Money. Copy one into a new Claude chat (the ones that open websites need Claude in Chrome). The prompts live in `lib/agents.ts`. |
 | **Earnings card** (Discover, Agents and the dashboard) | Bounty balance, total made, what a month brings in now and the monthly goal, with the videos needed to close the gap. Type the numbers in with **Update**, or let the Money agent read them off Bounty. Saved in the browser. |
 | **Discover** (`/ugc/`) | Hero with this week's #1 format, a ranked row of this week's top formats, and the library: Trending (views per day), For you (videos that fit the campaign) and New tabs; 7 days / 30 days / 90 days / this year / all time; sort by views per day, views, newest or engagement; search; niche and platform filters; bookmark, download and open on every card. |
@@ -154,6 +216,29 @@ snapshot in `lib/ugc.ts` (videos, per-video breakdowns and the week / month /
 90-day / year trends). To refresh it, pull the latest from DarkUGC, update that
 file and check each new video plays as an embed before adding it.
 
+## What needs you, and what hasn't been tried live
+
+- **Signing in is yours.** Jarvis Link reads Bounty, Instagram and Discord only
+  while you're signed in to them in Chrome. Signed out, Jarvis says so.
+- **Bounty's wallet page** couldn't be opened while this was built (it needs
+  your account), so the first read asks you to point at your balance and your
+  total. If Bounty keeps them on another page, add that page's address on
+  Connect.
+- **Discord unread** is read from the page's own labels; if Discord changes its
+  layout the names may stop appearing, and Jarvis can still read a channel's
+  text when you ask.
+- **The Claude features** (the conversation, jobs, AI titles, reading a
+  reference's look) were tested against a stand-in for Anthropic's API, not
+  with a real key. The Instagram token and Pexels paths were written from
+  their documentation and not run.
+- **The free picture search** depends on Openverse and Wikimedia Commons, which
+  can be slow or busy. A Pexels key or uploading your own picture always works.
+- **Saving a video** plays it through once in real time with the tab in front,
+  and writes MP4 in current Chrome and Safari (WebM in older browsers).
+- **Phones** can't install Chrome extensions: the briefing, the conversation,
+  the growth plan and the editor work there; reading Bounty and your accounts
+  happens on a computer.
+
 ## What's still look-only
 
 Purple "look only" notes mark parts that need their own hookup: the watch-list
@@ -162,6 +247,12 @@ rendering variations, refreshing account stats, speech-to-text, a real inbox for
 generated emails. Each note says what it needs.
 
 ## Code map
+
+- `lib/jarvis/`: the assistant. `brief.ts` (the daily briefing), `agent.ts` (Claude, called from the browser with your key), `tools.ts` (what Jarvis can do on the dashboard), `routines.ts`, `commands.ts` (no-key commands), `connect.ts` (YouTube, Instagram, Discord, account history), `bridge.ts` (talking to the extension), `growth.ts`, `outreach.ts`, `viral.ts`, `voice.ts`, `keys.ts`, `types.ts`
+- `lib/auto/`: the automatic editing. `audio.ts` (finding dead air), `stt.ts` (speech to text), `images.ts` (pictures from the internet), `reference.ts` (reading a reference video), `auto.ts` (the steps of Auto edit)
+- `components/jarvis/`: the conversation, the dock on every page, the ring
+- `app/ugc/jarvis/`, `app/ugc/growth/`, `app/ugc/connect/`: the three new pages
+- `extension/`: the Jarvis Link Chrome extension. `scripts/pack-extension.mjs` zips it into the site on every build
 
 - `lib/mock.ts`: the data model and the sample data it starts with
 - `lib/store.tsx`: the one store every page reads and writes (saving, backups, old-backup upgrades)
