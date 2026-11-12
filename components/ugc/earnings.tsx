@@ -1,8 +1,9 @@
 "use client";
 
 // Andre's money numbers: what's sitting in Bounty, what he's made in total, what
-// he makes a month now and the monthly goal. Typed in by him (or by the Money
-// agent, which reads them off Bounty in his Chrome). Saved in this browser.
+// he makes a month now and the monthly goal. Typed in by him, read off Bounty by
+// Jarvis through the Jarvis Link extension, or filled in by the Money agent in
+// Claude in Chrome. Saved in this browser.
 
 import { useEffect, useState } from "react";
 import { Pencil } from "lucide-react";
@@ -118,7 +119,7 @@ export function EarningsCard({ tone = "dm", className = "" }: { tone?: "dm" | "a
         <div>
           <h2 className="text-[16px] font-semibold tracking-[-0.01em]">Earnings</h2>
           <p className={`text-[12px] ${c.muted}`}>
-            {e.updated ? `Updated ${new Date(e.updated + "T12:00").toLocaleDateString("en-ZA", { day: "numeric", month: "short", year: "numeric" })}` : "Type in what Bounty shows, or let the Money agent do it."}
+            {e.updated ? `Updated ${new Date(e.updated + "T12:00").toLocaleDateString("en-ZA", { day: "numeric", month: "short", year: "numeric" })}` : "Type in what Bounty shows, or connect Jarvis Link and it's read for you every day."}
           </p>
         </div>
         {!editing && (

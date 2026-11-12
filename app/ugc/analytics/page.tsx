@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { money } from "@/components/ui";
 import { VideoPlayer, parseClip } from "@/components/video";
@@ -11,6 +11,11 @@ import { LINK, Panel, Stat, Tag, fmt } from "@/components/ugc/ui";
 import { DARE_UNLOCK, PER_DAY, PLAN_DAYS, THECAL_ALL, cardById, median, payFor } from "@/lib/dare";
 import { anyFormat } from "@/lib/campaigns";
 import { VIDEOS } from "@/lib/ugc";
+import { useHands } from "@/components/jarvis/hands";
+import { platformName } from "@/lib/mock";
+import { useData } from "@/lib/store";
+import { progressOf } from "@/lib/jarvis/connect";
+import { refreshAccounts } from "@/lib/jarvis/tools";
 
 const DAY = 86_400_000;
 const n0 = (n: number) => Math.round(n).toLocaleString("en-US");
@@ -30,6 +35,121 @@ function Section({ id, title, sub, children }: { id?: string; title: string; sub
     </section>
   );
 }
+
+// ---------------------------------------------------------------- your accounts
+
+const signed = (n: number | null) => (n == null ? "–" : (n > 0 ? "+" : "") + n0(n));
+
+/** how each connected account is growing, from the readings Jarvis saves every day */
+function MyAccounts() {
+  const { data } = useData();
+  const hands = useHands();
+  const [busy, setBusy] = useState(false);
+  const [note, setNote] = useState("");
+  const progress = useMemo(() => progressOf(data.jarvis.snapshots), [data.jarvis.snapshots]);
+  const followers = progress.reduce((s, p) => s + p.latest.followers, 0);
+  const views = progress.reduce((s, p) => s + p.latest.views, 0);
+  const week = progress.every((p) => p.weekFollowers == null) ? null : progress.reduce((s, p) => s + (p.weekFollowers ?? 0), 0);
+  const posts = data.postLog.slice(0, 8);
+
+  const check = async () => {
+    setBusy(true);
+    setNote("");
+    const r = await refreshAccounts(hands).catch((e) => ({ ok: false, text: e instanceof Error ? e.message : "That didn't work." }));
+    setNote(r.text);
+    setBusy(false);
+  };
+
+  return (
+    <Section id="accounts" title="Your accounts" sub="Followers and views for each account, read once a day by Jarvis (YouTube through its API, TikTok and Instagram through Jarvis Link) or typed in on Connect. The first reading is the starting line; growth shows from the second day.">
+      <div className="flex flex-wrap items-center gap-2">
+        <button className="dm-btn-primary h-9 px-4 text-[13px]" onClick={check} disabled={busy} data-testid="check-accounts">
+          {busy ? "Checking…" : "Check my accounts now"}
+        </button>
+        <Link href="/ugc/connect" className="dm-btn-ghost h-9 px-4 text-[13px]">
+          Connect an account
+        </Link>
+      </div>
+      {note && <p className="whitespace-pre-line text-[13px] text-dm-muted">{note}</p>}
+      {progress.length === 0 ? (
+        <Panel className="p-6 text-center text-[14px] text-dm-muted">
+          No readings yet. Connect YouTube, TikTok and Instagram on{" "}
+          <Link href="/ugc/connect" className="underline">
+            Connect
+          </Link>{" "}
+          (or type today&apos;s numbers in there) and this fills in from tomorrow.
+        </Panel>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <Stat label="Accounts" value={progress.length} sub={[...new Set(progress.map((p) => platformName[p.platform]))].join(", ")} />
+            <Stat label="Followers" value={fmt(followers)} sub="across every account" />
+            <Stat label="Gained in 7 days" value={signed(week)} sub={week == null ? "needs a week of readings" : "followers"} />
+            <Stat label="Views" value={fmt(views)} sub="total, where the platform shows it" />
+          </div>
+          <Panel className="overflow-x-auto p-4">
+            <table className="w-full min-w-[620px] text-left text-[13px]" data-testid="accounts-table">
+              <thead>
+                <tr className="border-b border-dm-line text-[12px] text-dm-muted">
+                  <th className="py-2 pr-3 font-medium">Account</th>
+                  <th className="py-2 pr-3 text-right font-medium">Followers</th>
+                  <th className="py-2 pr-3 text-right font-medium">7 days</th>
+                  <th className="py-2 pr-3 text-right font-medium">Since {progress[0] ? "first reading" : ""}</th>
+                  <th className="py-2 pr-3 text-right font-medium">Views</th>
+                  <th className="py-2 pr-3 text-right font-medium">Views, 7 days</th>
+                  <th className="py-2 font-medium">Last read</th>
+                </tr>
+              </thead>
+              <tbody>
+                {progress.map((p) => (
+                  <tr key={p.platform + p.handle} className="border-b border-dm-line/60 last:border-0">
+                    <td className="py-2 pr-3">
+                      <b className="font-medium">{p.handle}</b> <span className="text-dm-muted">{platformName[p.platform]}</span>
+                    </td>
+                    <td className="py-2 pr-3 text-right font-semibold tabular-nums">{n0(p.latest.followers)}</td>
+                    <td className={cxGain(p.weekFollowers)}>{signed(p.weekFollowers)}</td>
+                    <td className={cxGain(p.points.length > 1 ? p.followersGain : null)}>{p.points.length > 1 ? signed(p.followersGain) : "–"}</td>
+                    <td className="py-2 pr-3 text-right tabular-nums">{p.latest.views ? n0(p.latest.views) : "–"}</td>
+                    <td className={cxGain(p.weekViews)}>{p.latest.views ? signed(p.weekViews) : "–"}</td>
+                    <td className="py-2 text-dm-muted">
+                      {p.latest.day} · {p.points.length} reading{p.points.length === 1 ? "" : "s"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Panel>
+          {progress
+            .filter((p) => p.points.length > 1)
+            .slice(0, 4)
+            .map((p) => (
+              <Columns key={p.platform + p.handle} title={`${p.handle} on ${platformName[p.platform]}: followers`} sub={`${signed(p.followersGain)} since ${p.first.day}`} data={p.points.slice(-30).map((x) => ({ label: x.day, value: x.followers, sub: x.views ? `${n0(x.views)} views` : undefined }))} fmt={n0} valueLabel="Followers" height={150} />
+            ))}
+          {posts.length > 0 && (
+            <Panel className="p-4">
+              <h3 className="mb-2 text-[14px] font-semibold">Your newest videos</h3>
+              <ul className="divide-y divide-dm-line/60 text-[13px]">
+                {posts.map((v) => (
+                  <li key={v.id} className="flex items-center gap-3 py-1.5">
+                    <span className="w-16 shrink-0 text-right font-semibold tabular-nums">{v.views || "–"}</span>
+                    <a href={v.url} target="_blank" rel="noreferrer" className="min-w-0 flex-1 truncate hover:underline">
+                      {v.caption || v.url}
+                    </a>
+                    <span className="shrink-0 text-dm-muted">
+                      {v.handle} · {v.date}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </Panel>
+          )}
+        </>
+      )}
+    </Section>
+  );
+}
+
+const cxGain = (n: number | null) => `py-2 pr-3 text-right tabular-nums ${n == null || n === 0 ? "text-dm-muted" : n > 0 ? "text-dm-good" : "text-dm-bad"}`;
 
 // ---------------------------------------------------------------- your results
 
@@ -217,7 +337,8 @@ export default function AnalyticsPage() {
   }, []);
   return (
     <div className="space-y-12">
-      <PageHead eyebrow="Analytics" title="Analytics" sub="Your own results from the plan, what's getting views across UGC, and how thecal.mp3's repost method performs on the same campaign." />
+      <PageHead eyebrow="Analytics" title="Analytics" sub="How your accounts are growing, your own results from the plan, what's getting views across UGC, and how thecal.mp3's repost method performs on the same campaign." />
+      <MyAccounts />
       <YourResults />
       <Market />
       <TheCal />

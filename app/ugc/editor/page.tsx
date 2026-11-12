@@ -1493,7 +1493,8 @@ export default function EditorPage() {
                 Pictures
               </H>
               <p className="mb-2 text-[13px] text-dm-muted">
-                Search the internet for a picture and it&apos;s placed where the playhead is ({clock(now)}). Photos come from {keys.pexels ? "Pexels" : "Openverse (free to use commercially)"}.
+                Search the internet for a picture and it&apos;s placed where the playhead is ({clock(now)}). Photos come from {keys.pexels ? "Pexels" : "Openverse and Wikimedia Commons: only ones that may be used commercially and edited"}.
+                {!keys.pexels && " The free search can take a few seconds."}
               </p>
               <div className="flex flex-wrap gap-2">
                 <input
@@ -1556,6 +1557,12 @@ export default function EditorPage() {
                       </button>
                     </div>
                   ))}
+                </div>
+              )}
+              {p.images.some((l) => l.credit && l.credit !== "your upload") && (
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-[12px] text-dm-muted">
+                  <span>Openly licensed pictures ask for a credit. Put this line in your post&apos;s caption:</span>
+                  <CopyBtn text={"Photos: " + [...new Set(p.images.map((l) => l.credit).filter((c) => c && c !== "your upload"))].join("; ")} label="Copy the credits" className="h-8 px-3 text-[12px]" />
                 </div>
               )}
             </Panel>

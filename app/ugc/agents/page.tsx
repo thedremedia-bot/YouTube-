@@ -40,6 +40,23 @@ export default function AgentsPage() {
         </button>
       </PageHead>
 
+      <Panel className="mb-5 flex flex-wrap items-center justify-between gap-3 p-4">
+        <p className="max-w-3xl text-[13.5px] leading-relaxed">
+          <b className="font-semibold">Jarvis now does part of this by itself.</b>{" "}
+          <span className="text-dm-muted">
+            It finds the day&apos;s videos to copy, reads Bounty, checks your accounts and unread Discord, and edits clips in the editor, with no prompt to paste. These seven agents are still the way to do the jobs that need clicking around in your Chrome: scheduling posts, warming up accounts, working the apps.
+          </span>
+        </p>
+        <span className="flex shrink-0 gap-2">
+          <Link href="/ugc/jarvis" className="dm-btn-primary h-9 px-4 text-[13px]">
+            Open Jarvis
+          </Link>
+          <Link href="/ugc/connect" className="dm-btn-ghost h-9 px-4 text-[13px]">
+            Connect
+          </Link>
+        </span>
+      </Panel>
+
       <EarningsCard className="mb-5" />
 
       <Panel className="mb-5 p-4 md:p-5">

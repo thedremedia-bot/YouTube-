@@ -3,7 +3,9 @@
 import { EarningsCard } from "@/components/ugc/earnings";
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, CalendarClock, CalendarPlus, ExternalLink, Info, Pencil, Video } from "lucide-react";
+import { ArrowRight, CalendarClock, CalendarPlus, ExternalLink, Info, Pencil, Sparkles, Video } from "lucide-react";
+import { useEarnings } from "@/components/ugc/earnings";
+import { buildBrief } from "@/lib/jarvis/brief";
 import { BOTS } from "@/lib/bots";
 import { MONTHS, type PlanItem } from "@/lib/mock";
 import { monthInfo, startMonth, timeAgo, useData } from "@/lib/store";
@@ -162,6 +164,33 @@ function DayEditor({ day, onClose }: { day: number; onClose: () => void }) {
   );
 }
 
+/** Jarvis's line for the day, with the way in to the full briefing */
+function JarvisRow() {
+  const { data } = useData();
+  const [earnings] = useEarnings();
+  const brief = buildBrief(data, earnings);
+  const urgent = brief.sections.find((s) => s.key === "now")?.items.length || 0;
+  return (
+    <Link href="/ugc/jarvis" className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-ink px-4 py-3 text-white transition hover:opacity-95">
+      <span className="flex min-w-0 items-center gap-3">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/10">
+          <Sparkles size={17} />
+        </span>
+        <span className="min-w-0">
+          <span className="block text-sm font-semibold">Jarvis · today&apos;s briefing</span>
+          <span className="block truncate text-[13px] text-white/75">
+            {urgent ? `${urgent} thing${urgent === 1 ? " needs" : "s need"} you now. ` : ""}
+            {brief.headline}.
+          </span>
+        </span>
+      </span>
+      <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium">
+        Open Jarvis <ArrowRight size={15} />
+      </span>
+    </Link>
+  );
+}
+
 export default function DashboardPage() {
   const { data, update } = useData();
   const { money: m, brands, stats, profile, bots } = data;
@@ -223,6 +252,8 @@ export default function DashboardPage() {
           </Button>
         </Card>
       )}
+
+      <JarvisRow />
 
       <TodayRow />
 

@@ -23,10 +23,14 @@ import {
   Mic,
   PenTool,
   Recycle,
+  Plug,
   Rocket,
   Search,
+  Scissors,
   Settings,
+  Sparkles,
   Timer,
+  TrendingUp,
   TriangleAlert,
   Video,
   Wrench,
@@ -40,6 +44,10 @@ import { cx } from "./ui";
 type Item = { href: string; label: string; icon: LucideIcon; tint?: string };
 
 const icons: Record<string, { icon: LucideIcon; tint?: string }> = {
+  "/ugc/jarvis": { icon: Sparkles, tint: "#18181B" },
+  "/ugc/growth": { icon: TrendingUp, tint: "#16A34A" },
+  "/ugc/editor": { icon: Scissors, tint: "#7C3AED" },
+  "/ugc/connect": { icon: Plug, tint: "#0891B2" },
   "/": { icon: Home },
   "/campaigns": { icon: Megaphone },
   "/bots": { icon: Bot },
@@ -62,7 +70,9 @@ const icons: Record<string, { icon: LucideIcon; tint?: string }> = {
 };
 
 function isActive(path: string, href: string) {
-  return href === "/" ? path === "/" : path.startsWith(href);
+  if (href === "/") return path === "/";
+  if (href === "/ugc") return path.startsWith("/ugc") && !["/ugc/jarvis", "/ugc/growth", "/ugc/editor", "/ugc/connect"].some((p) => path.startsWith(p));
+  return path.startsWith(href);
 }
 
 function useNav() {

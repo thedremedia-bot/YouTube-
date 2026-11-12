@@ -27,7 +27,7 @@ export const Num = ({ label, value, onChange, step = 0.1, min = 0, max, classNam
 );
 
 export const H = ({ n, children, right }: { n?: number | string; children: React.ReactNode; right?: React.ReactNode }) => (
-  <div className="mb-3 flex items-center justify-between gap-2">
+  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
     <h2 className="flex items-center gap-2 text-[15px] font-semibold">
       {n != null && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-dm-surface2 px-1 text-[11px] text-dm-muted">{n}</span>}
       {children}

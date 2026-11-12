@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Jarvis Link</title>
+    <style>
+      :root { color-scheme: light dark; --ink: #111; --muted: #666; --line: #dedede; --bg: #fff; --soft: #f2f2f0; --good: #15803d; --bad: #b91c1c; }
+      @media (prefers-color-scheme: dark) { :root { --ink: #f5f5f5; --muted: #a3a3a8; --line: #2e2e32; --bg: #141416; --soft: #1f1f22; --good: #4ade80; --bad: #f87171; } }
+      * { box-sizing: border-box; }
+      body { margin: 0; width: 340px; padding: 14px; font: 13px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: var(--bg); }
+      h1 { margin: 0 0 2px; font-size: 15px; }
+      h2 { margin: 14px 0 6px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+      p { margin: 0 0 8px; }
+      .muted { color: var(--muted); }
+      .row { display: flex; align-items: center; gap: 8px; }
+      .box { background: var(--soft); border-radius: 10px; padding: 9px 10px; }
+      button { font: inherit; cursor: pointer; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); padding: 6px 12px; }
+      button.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+      button:disabled { opacity: 0.5; cursor: default; }
+      input[type="time"] { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 4px 6px; }
+      ul { margin: 0; padding: 0; list-style: none; }
+      li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 3px 0; word-break: break-all; }
+      li button { padding: 2px 8px; font-size: 12px; flex-shrink: 0; }
+      .ok { color: var(--good); } .no { color: var(--bad); }
+      table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+      td { padding: 3px 0; vertical-align: top; } td:last-child { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; padding-left: 8px; }
+    </style>
+  </head>
+  <body>
+    <h1>Jarvis Link</h1>
+    <p class="muted">Reads your Bounty earnings, account numbers and unread Discord for your Dre Media dashboard. It only reads.</p>
+
+    <div class="box" id="status">Checking…</div>
+
+    <h2>Paired dashboards</h2>
+    <ul id="sites"></ul>
+    <div class="row" style="margin-top: 6px"><button id="pair">Pair this site</button><span class="muted" id="pairNote"></span></div>
+
+    <h2>Every morning</h2>
+    <label class="row"><input type="checkbox" id="dailyOn" /> Open my dashboard at <input type="time" id="dailyTime" value="08:00" /></label>
+    <p class="muted" style="margin-top: 4px">Chrome has to be running. Opening the dashboard is what makes Jarvis check Bounty, your accounts and your messages for the day.</p>
+
+    <h2>Try it</h2>
+    <div class="row"><button class="primary" id="bounty">Read Bounty now</button><span class="muted" id="bountyNote"></span></div>
+    <div id="bountyOut"></div>
+
+    <p class="muted" style="margin-top: 12px" id="ver"></p>
+    <script src="popup.js"></script>
+  </body>
+</html>

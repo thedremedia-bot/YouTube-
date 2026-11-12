@@ -24,6 +24,7 @@ export function Seg<T extends string>({ options, value, onChange, label, classNa
         return (
           <button
             key={o.value}
+            type="button"
             role="radio"
             aria-checked={on}
             onClick={() => onChange(o.value)}

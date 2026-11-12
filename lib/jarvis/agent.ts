@@ -166,7 +166,8 @@ export async function converse(opts: { keys: Keys; hands: Hands; history: Msg[];
       const label = toolLabel(call.name, call.input);
       onEvent({ type: "step", id: call.id, label, state: "run" });
       const r = signal?.aborted ? { text: "Stopped by Andre before this ran.", error: true } : await runTool(call.name, call.input, hands);
-      onEvent({ type: "step", id: call.id, label, state: r.error ? "error" : "ok", note: r.error ? r.text.slice(0, 160) : undefined });
+      // a malformed call is Claude's to fix on the next step: the person only needs to know it didn't run
+      onEvent({ type: "step", id: call.id, label, state: r.error ? "error" : "ok", note: r.error ? (r.text.startsWith("{") ? "didn't run, trying again" : r.text.slice(0, 160)) : undefined });
       results.push({ type: "tool_result", tool_use_id: call.id, content: r.text, ...(r.error ? { is_error: true } : {}) });
     }
     messages.push({ role: "user", content: results });

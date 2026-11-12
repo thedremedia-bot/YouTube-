@@ -7,7 +7,7 @@
 import { isoDay, type Data } from "../mock";
 import { EXTRAS, PER_DAY, PLAN_DAYS, dayCards, variant } from "../dare";
 import { POLIFLY_PLAN } from "../campaigns";
-import { STAGE_PLAN, stageFor, usd } from "./growth";
+import { STAGE_PLAN, stageFor, usd, usdExact } from "./growth";
 import { libraryPicks } from "./viral";
 import type { Find } from "./types";
 
@@ -219,7 +219,7 @@ export function buildBrief(data: Data, earnings: EarningsLike, now = new Date())
 /** the briefing as plain text: for Discord, for copying, and for Jarvis to read */
 export function briefText(b: Brief, opts: { max?: number } = {}) {
   const max = opts.max ?? 8;
-  const lines = [`${b.greeting}. ${b.day}`, `Today: ${b.headline}.`, `Money: ${usd(b.money.monthly)} a month now, goal ${usd(b.money.goal)} (${b.money.pct}%).${b.money.monthSoFar ? ` This month so far ${usd(b.money.monthSoFar)}.` : ""}${b.money.bounty != null ? ` Bounty balance ${usd(b.money.bounty)}.` : ""}`];
+  const lines = [`${b.greeting}. ${b.day}`, `Today: ${b.headline}.`, `Money: ${usd(b.money.monthly)} a month now, goal ${usd(b.money.goal)} (${b.money.pct}%).${b.money.monthSoFar ? ` This month so far ${usd(b.money.monthSoFar)}.` : ""}${b.money.bounty != null ? ` Bounty balance ${usdExact(b.money.bounty)}.` : ""}`];
   for (const s of b.sections) {
     lines.push("", `${s.title.toUpperCase()}${s.note ? ` (${s.note})` : ""}`);
     for (const i of s.items.slice(0, max)) lines.push(`${i.done ? "[x]" : "[ ]"} ${i.title}${i.detail ? ` (${i.detail})` : ""}`);

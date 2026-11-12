@@ -151,3 +151,6 @@ vite.config.ts.timestamp-*
 # Next.js
 .vercel
 next-env.d.ts
+
+# built from extension/ by scripts/pack-extension.mjs
+public/downloads/

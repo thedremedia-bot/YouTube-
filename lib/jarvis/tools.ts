@@ -12,7 +12,7 @@ import { dayCards, variant, PLAN_DAYS } from "../dare";
 import { buildBrief, briefText, todayIndex, type EarningsLike } from "./brief";
 import { linkPing, pickBounty, readPage, type PageRead } from "./bridge";
 import { handlesOf, progressOf, readInstagramApi, readProfile, readYouTube, saveReading, sendDiscord } from "./connect";
-import { monthMath, usd } from "./growth";
+import { monthMath, usd, usdExact } from "./growth";
 import type { Keys } from "./keys";
 import type { Find, JTask, Lead, LeadStatus, Routine } from "./types";
 import { libraryPicks, mergeFinds, youtubeFinds } from "./viral";
@@ -113,7 +113,7 @@ export async function checkBounty(h: Hands): Promise<{ ok: boolean; text: string
   const e = h.earnings();
   const next = { ...e, bounty: pick.balance ? pick.balance.amount : e.bounty, total: pick.total ? pick.total.amount : e.total, updated: today() };
   h.setEarnings(next);
-  const text = `Bounty read: ${pick.balance ? `balance ${usd(pick.balance.amount)} ("${pick.balance.label}")` : "no balance found"}${pick.total ? `, total ${usd(pick.total.amount)} ("${pick.total.label}")` : ""}. The Earnings card is updated.`;
+  const text = `Bounty read: ${pick.balance ? `balance ${usdExact(pick.balance.amount)} ("${pick.balance.label}")` : "no balance found"}${pick.total ? `, total ${usdExact(pick.total.amount)} ("${pick.total.label}")` : ""}. The Earnings card is updated.`;
   log(h, text);
   return { ok: true, text, pages };
 }
@@ -402,7 +402,7 @@ const DEFS: Def[] = [
       };
       const next = { ...e, bounty: pos(i.bounty_balance) ?? e.bounty, total: pos(i.total_made) ?? e.total, monthly: pos(i.monthly_now) ?? e.monthly, goal: pos(i.monthly_goal) || e.goal, updated: today() };
       h.setEarnings(next);
-      return `Earnings card: balance ${next.bounty == null ? "not set" : usd(next.bounty)}, total ${next.total == null ? "not set" : usd(next.total)}, ${usd(next.monthly)} a month now, goal ${usd(next.goal)}.`;
+      return `Earnings card: balance ${next.bounty == null ? "not set" : usdExact(next.bounty)}, total ${next.total == null ? "not set" : usdExact(next.total)}, ${usd(next.monthly)} a month now, goal ${usd(next.goal)}.`;
     },
   },
   {

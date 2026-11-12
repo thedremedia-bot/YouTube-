@@ -45,6 +45,8 @@ export const PLAN_FORMAT = `{
   "volume": 1,
   "shape": "9:16",
   "fit": "fill",
+  "cuts": [{ "from": 4.4, "to": 6.6 }],
+  "captions": { "on": true, "position": "bottom", "look": "highlight", "words": 3 },
   "texts": [
     { "text": "the hook, as it shows on screen", "from": 0, "to": 3, "position": "top", "size": "medium", "style": "outline" },
     { "text": "a line later in the video", "from": 8, "to": 11.5, "position": "bottom", "size": "medium", "style": "box" }
@@ -56,6 +58,8 @@ const PLAN_RULES = `Rules for the plan, so the editor takes it without a single 
 - Times are seconds in the original video. Every "from" and "to" sits inside the trim, "to" is after "from", and each text stays up at least 1.5 seconds.
 - "speed" is between 0.5 and 2. "volume" is 0 (muted) to 1. "shape" is "9:16", "4:5", "1:1" or "16:9". "fit" is "fill" (crop to the frame) or "fit" (show the whole video).
 - "position" is "top", "middle" or "bottom". "size" is "small", "medium" or "large". "style" is "outline" (white letters, black edge) or "box" (black letters on white).
+- "cuts" are parts inside the trim to leave out (dead air, a mistake, a retake), each with "from" and "to" in seconds of the original. Leave it out to keep the cuts the editor already has; send [] to put everything back.
+- "captions" turns the running captions on or off and sets their look: "position" is "top", "middle" or "bottom"; "look" is "highlight" (the word being said lights up), "outline" or "box"; "words" is how many show at once (1 to 6). The words themselves come from the editor listening to the clip.
 - The first text is the hook. Keep it under 60 letters, at "top", from the first second of the trim.
 - "hooks" are other hooks for the same clip: the editor saves one more video for each. Leave it [] if I didn't ask for versions.
 - Never put text at the very bottom of a 9:16 video: the apps cover it.`;
@@ -167,7 +171,7 @@ B. Look at my clip.
 5. If the clip can't match the reference (too short, a scene is missing, the product never shows), stop and tell me what to re-film. Don't force it.
 
 C. Make the edit.
-6. With a reference: click "Copy it onto my clip". Then correct what it set, from what you saw: move the trim start to my first movement or word, the end to just after my last line.
+6. First press "Auto edit my video": the editor listens to the clip, cuts the dead air, writes the captions and puts a title on. Read the list it prints and check each cut it made against what you saw. With a reference from my library: choose "From the library" and click "Copy it onto my clip". Then correct what was set, from what you saw: move the trim start to my first movement or word, the end to just after my last line.
 7. Type the rest into "Tell the editor what to do", one step per line, and click "Do it". For example:
    cut the first 1.4 seconds
    hook: [the hook, sharpened, same promise]

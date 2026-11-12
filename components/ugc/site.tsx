@@ -14,17 +14,21 @@ import { SNAPSHOT_DATE } from "@/lib/ugc";
 import { CAMPAIGNS, anyFormat, type CampaignKey } from "@/lib/campaigns";
 import { cx } from "@/components/ui";
 import { ThemeProvider, ThemeToggle } from "./theme";
+import { JarvisDock } from "@/components/jarvis/dock";
 
 export const PAGES = [
+  { href: "/ugc/jarvis", label: "Jarvis", title: "Jarvis" },
   { href: "/ugc", label: "Discover", title: "Discover viral UGC" },
   { href: "/ugc/viral", label: "Going viral", title: "Going viral" },
   { href: "/ugc/scripts", label: "Scripts", title: "Scripts" },
   { href: "/ugc/plan", label: "Plan", title: "Today's 7 videos" },
   { href: "/ugc/analytics", label: "Analytics", title: "Analytics" },
   { href: "/ugc/editor", label: "Editor", title: "Video editor" },
+  { href: "/ugc/growth", label: "Growth", title: "Growth plan" },
   { href: "/ugc/agents", label: "Agents", title: "Agents" },
   { href: "/ugc/download", label: "Download", title: "Video downloader" },
   { href: "/ugc/saved", label: "Saved", title: "Saved videos" },
+  { href: "/ugc/connect", label: "Connect", title: "Connections" },
 ];
 
 const clean = (p: string) => (p.length > 1 ? p.replace(/\/+$/, "") : p);
@@ -127,7 +131,7 @@ export function UgcSite({ children }: { children: ReactNode }) {
   const page = PAGES.find((p) => isOn(path, p.href));
 
   useEffect(() => {
-    if (page) document.title = `${page.title} · Dremedia`;
+    if (page) document.title = `${page.title} · Dre Media`;
   }, [page]);
 
   return (
@@ -156,7 +160,7 @@ export function UgcSite({ children }: { children: ReactNode }) {
                       href={p.href}
                       aria-current={on ? "page" : undefined}
                       className={cx(
-                        "shrink-0 rounded-full px-3.5 py-1.5 text-[14px] transition",
+                        "shrink-0 rounded-full px-3 py-1.5 text-[13.5px] transition",
                         on
                           ? "bg-dm-accent font-medium text-dm-accent-fg"
                           : "text-dm-muted hover:bg-dm-surface2 hover:text-dm-ink",
@@ -175,7 +179,9 @@ export function UgcSite({ children }: { children: ReactNode }) {
             {children}
           </main>
 
-          <footer className="mx-auto max-w-[1240px] px-4 pb-10 md:px-6">
+          <JarvisDock />
+
+          <footer className="mx-auto max-w-[1240px] px-4 pb-24 md:px-6">
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-dm-line pt-5 text-[12px] text-dm-muted">
               <div className="flex items-center gap-3">
                 <Logo className="h-5 opacity-80" />

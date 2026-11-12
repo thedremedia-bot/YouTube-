@@ -7,7 +7,7 @@
 import { isoDay, uid } from "../mock";
 import { buildBrief, briefText } from "./brief";
 import { sendDiscord } from "./connect";
-import { usd } from "./growth";
+import { usd, usdExact } from "./growth";
 import { PAGES, checkBounty, checkMessages, findViral, refreshAccounts, type Hands } from "./tools";
 import type { JTask } from "./types";
 
@@ -62,13 +62,13 @@ export async function localCommand(input: string, h: Hands): Promise<string> {
     const v = money(m[1]);
     if (v == null) return "I didn't catch the amount.";
     h.setEarnings({ ...h.earnings(), bounty: v, updated: today });
-    return `Bounty balance set to ${usd(v)}.`;
+    return `Bounty balance set to ${usdExact(v)}.`;
   }
   if ((m = s.match(/^(?:set\s+)?(?:my\s+)?(?:total(?: made| earned)?|made in total)\s*(?:is|to|=|:)?\s*(\$?[\d,.]+k?)/))) {
     const v = money(m[1]);
     if (v == null) return "I didn't catch the amount.";
     h.setEarnings({ ...h.earnings(), total: v, updated: today });
-    return `Total made set to ${usd(v)}.`;
+    return `Total made set to ${usdExact(v)}.`;
   }
   if ((m = s.match(/^(?:set\s+)?(?:my\s+)?goal\s*(?:is|to|=|:)?\s*(\$?[\d,.]+k?)/))) {
     const v = money(m[1]);
@@ -91,7 +91,7 @@ export async function localCommand(input: string, h: Hands): Promise<string> {
     const now = new Date();
     if (d0.year !== now.getFullYear() || d0.month !== now.getMonth()) return "The money calendar is still on an earlier month. Start the new month from the Dashboard, then tell me again.";
     h.update((d) => ({ ...d, money: { ...d.money, days: d.money.days.map((x, k) => (k === now.getDate() - 1 ? { videos: vids ? Number(vids[1]) : x.videos, earned: earned ?? x.earned } : x)) } }));
-    return `Logged today: ${vids ? `${vids[1]} videos` : ""}${vids && earned != null ? ", " : ""}${earned != null ? usd(earned) : ""}.`;
+    return `Logged today: ${vids ? `${vids[1]} videos` : ""}${vids && earned != null ? ", " : ""}${earned != null ? usdExact(earned) : ""}.`;
   }
 
   if (/\b(viral|what (should|can) i copy|videos to copy)\b/.test(s)) {

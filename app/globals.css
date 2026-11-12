@@ -99,3 +99,18 @@ html[data-dm-theme="dark"] .dm .logo-on-light { display: none; }
   .dm-btn-ghost { @apply dm-btn border border-dm-line bg-dm-surface text-dm-ink hover:bg-dm-surface2; }
   .dm-panel { @apply rounded-2xl border border-dm-line bg-dm-surface; }
 }
+
+/* ------------------------------------------------------------------ Jarvis
+   The ring: still when idle, breathing while it thinks, rippling while it
+   talks or listens. No movement at all for people who've asked for less. */
+@keyframes jarvis-breathe { 0%, 100% { transform: scale(0.82); opacity: 0.55; } 50% { transform: scale(1); opacity: 1; } }
+@keyframes jarvis-ripple { 0% { transform: scale(0.7); opacity: 0.9; } 100% { transform: scale(1.25); opacity: 0; } }
+@keyframes jarvis-spin { to { transform: rotate(360deg); } }
+.jarvis-orb[data-state="thinking"] .jarvis-orb-ring { border-style: dashed; animation: jarvis-spin 2.4s linear infinite; }
+.jarvis-orb[data-state="thinking"] .jarvis-orb-core { animation: jarvis-breathe 1.2s ease-in-out infinite; }
+.jarvis-orb[data-state="speaking"] .jarvis-orb-ring2, .jarvis-orb[data-state="listening"] .jarvis-orb-ring2 { animation: jarvis-ripple 1.1s ease-out infinite; }
+.jarvis-orb[data-state="speaking"] .jarvis-orb-core { animation: jarvis-breathe 0.5s ease-in-out infinite; }
+.jarvis-orb[data-state="listening"] .jarvis-orb-core { background: rgb(var(--dm-bad)); animation: jarvis-breathe 0.9s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .jarvis-orb * { animation: none !important; }
+}

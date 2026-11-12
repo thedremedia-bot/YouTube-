@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/pack-extension.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/pack-extension.mjs",
     "build": "next build",
     "start": "npx --yes serve@14 out"
   },

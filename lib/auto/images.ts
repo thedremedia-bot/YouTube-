@@ -1,17 +1,21 @@
 "use client";
 
-// Pictures from the internet for the editor. Two sources:
+// Pictures from the internet for the editor. Three sources, tried in order:
+//   Pexels: free stock photos, sharp and "ad-like". Needs a free API key
+//     (Connect page), so it's only used when you've added one.
 //   Openverse (openverse.org): openly licensed photos, no key needed. Results
-//     are limited to ones cleared for commercial use.
-//   Pexels: free stock photos, sharper and more "ad-like". Needs a free API key
-//     (Connect page).
+//     are limited to licences that allow commercial use and editing (so no
+//     "non-commercial" or "no derivatives" pictures). Its free service is
+//     sometimes slow, so a search that times out is tried again and then
+//     handed to the next source.
+//   Wikimedia Commons: freely licensed pictures, no key needed.
 // A picture is downloaded into this browser's memory before it's drawn, so the
 // saved video never depends on the other site again. You can also upload your
 // own (a screenshot of the app, a logo).
 
 import type { Pictures, Word } from "../editor";
 
-export type Pic = { id: string; thumb: string; full: string; credit: string; source: "openverse" | "pexels"; page: string; w: number; h: number };
+export type Pic = { id: string; thumb: string; full: string; credit: string; source: "openverse" | "pexels" | "wikimedia"; page: string; w: number; h: number };
 
 /** the pictures in use, by their address in this browser (shared by the preview and the export) */
 export const pictures: Pictures = new Map();
@@ -19,26 +23,65 @@ export const pictures: Pictures = new Map();
 type OvResult = { id: string; title?: string; creator?: string; license?: string; url?: string; thumbnail?: string; foreign_landing_url?: string; width?: number; height?: number };
 type PxPhoto = { id: number; photographer?: string; url?: string; width?: number; height?: number; src?: { large?: string; large2x?: string; portrait?: string; medium?: string } };
 
-export async function searchPictures(query: string, pexelsKey = "", n = 12): Promise<Pic[]> {
-  const q = query.trim();
-  if (!q) return [];
-  if (pexelsKey) {
-    try {
-      const r = await fetch(`https://api.pexels.com/v1/search?${new URLSearchParams({ query: q, per_page: String(n), orientation: "portrait" })}`, { headers: { Authorization: pexelsKey } });
-      if (r.ok) {
-        const j = (await r.json()) as { photos?: PxPhoto[] };
-        const out = (j.photos || []).filter((p) => p.src?.large).map((p): Pic => ({ id: "px-" + p.id, thumb: p.src!.medium || p.src!.large!, full: p.src!.portrait || p.src!.large2x || p.src!.large!, credit: `${p.photographer || "Pexels"} / Pexels`, source: "pexels", page: p.url || "", w: p.width || 0, h: p.height || 0 }));
-        if (out.length) return out;
-      }
-    } catch {
-      // fall through to Openverse
-    }
+type WmPage = { title?: string; imageinfo?: { thumburl?: string; url?: string; width?: number; height?: number; descriptionurl?: string; mime?: string; extmetadata?: { Artist?: { value?: string }; LicenseShortName?: { value?: string } } }[] };
+
+const plain = (html = "") => html.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+
+async function pexels(q: string, key: string, n: number): Promise<Pic[]> {
+  const r = await fetch(`https://api.pexels.com/v1/search?${new URLSearchParams({ query: q, per_page: String(n), orientation: "portrait" })}`, { headers: { Authorization: key } });
+  if (!r.ok) throw new Error(`Pexels ${r.status}`);
+  const j = (await r.json()) as { photos?: PxPhoto[] };
+  return (j.photos || []).filter((p) => p.src?.large).map((p): Pic => ({ id: "px-" + p.id, thumb: p.src!.medium || p.src!.large!, full: p.src!.portrait || p.src!.large2x || p.src!.large!, credit: `${p.photographer || "Pexels"} / Pexels`, source: "pexels", page: p.url || "", w: p.width || 0, h: p.height || 0 }));
+}
+
+async function openverse(q: string, n: number): Promise<Pic[]> {
+  const url = `https://api.openverse.org/v1/images/?${new URLSearchParams({ q, page_size: String(n), license_type: "commercial,modification", mature: "false" })}`;
+  // its free service times out now and then (the browser sees that as a failed request): two more tries before giving up on it
+  let r: Response | null = null;
+  for (let attempt = 0; attempt < 3 && !r?.ok; attempt++) {
+    if (attempt) await new Promise((x) => setTimeout(x, 1000));
+    r = await fetch(url).catch(() => null);
+    if (r && r.status < 500) break;
   }
-  const r = await fetch(`https://api.openverse.org/v1/images/?${new URLSearchParams({ q, page_size: String(n), license_type: "commercial", mature: "false" })}`);
-  if (r.status === 429) throw new Error("Openverse is asking us to slow down (it allows a limited number of free searches). Wait a minute, or add a free Pexels key on Connect.");
-  if (!r.ok) throw new Error(`The picture search didn't answer (${r.status}). Try again, or upload a picture.`);
+  if (!r?.ok) throw new Error(`Openverse ${r?.status ?? "unreachable"}`);
   const j = (await r.json()) as { results?: OvResult[] };
   return (j.results || []).filter((x) => x.thumbnail || x.url).map((x): Pic => ({ id: "ov-" + x.id, thumb: x.thumbnail || x.url!, full: x.url || x.thumbnail!, credit: `${x.creator || "unknown"} (${(x.license || "cc").toUpperCase()}) via Openverse`, source: "openverse", page: x.foreign_landing_url || "", w: x.width || 0, h: x.height || 0 }));
+}
+
+async function wikimedia(q: string, n: number): Promise<Pic[]> {
+  const r = await fetch(`https://commons.wikimedia.org/w/api.php?${new URLSearchParams({ action: "query", format: "json", origin: "*", generator: "search", gsrsearch: `${q} filetype:bitmap`, gsrnamespace: "6", gsrlimit: String(n), prop: "imageinfo", iiprop: "url|size|mime|extmetadata", iiurlwidth: "1080" })}`);
+  if (!r.ok) throw new Error(`Wikimedia ${r.status}`);
+  const j = (await r.json()) as { query?: { pages?: Record<string, WmPage> } };
+  return Object.entries(j.query?.pages || {})
+    .map(([id, pg]) => ({ id, pg, info: pg.imageinfo?.[0] }))
+    .filter((x) => x.info?.thumburl && /^image\/(jpeg|png|webp)$/.test(x.info.mime || ""))
+    .map(({ id, info }): Pic => ({ id: "wm-" + id, thumb: info!.thumburl!, full: info!.thumburl!, credit: `${plain(info!.extmetadata?.Artist?.value).slice(0, 60) || "unknown"} (${info!.extmetadata?.LicenseShortName?.value || "free licence"}) via Wikimedia Commons`, source: "wikimedia", page: info!.descriptionurl || "", w: info!.width || 0, h: info!.height || 0 }));
+}
+
+/**
+ * Search for pictures. With a Pexels key, Pexels is asked first. Otherwise (or
+ * if it has nothing) the two free sources are asked at the same time and the
+ * first one to come back with results wins, so one slow service doesn't hold
+ * the edit up.
+ */
+export async function searchPictures(query: string, pexelsKey = "", n = 12): Promise<Pic[]> {
+  // "a laptop" and "the laptop" search worse than "laptop"
+  const q = query.trim().replace(/^(?:an?|the|some)\s+/i, "");
+  if (!q) return [];
+  if (pexelsKey) {
+    const out = await pexels(q, pexelsKey, n).catch(() => []);
+    if (out.length) return out;
+  }
+  class Empty extends Error {}
+  const found = (job: Promise<Pic[]>) => job.then((r) => (r.length ? r : Promise.reject(new Empty())));
+  try {
+    return await Promise.any([found(openverse(q, n)), found(wikimedia(q, n))]);
+  } catch (e) {
+    const errors = e instanceof AggregateError ? e.errors : [e];
+    // both answered and had nothing: that's a "no results", not a failure
+    if (errors.some((x) => x instanceof Empty)) return [];
+    throw new Error("The picture search isn't answering right now. Try again in a minute, upload a picture of your own, or add a free Pexels key on Connect for a faster search.");
+  }
 }
 
 async function toBitmap(blob: Blob) {

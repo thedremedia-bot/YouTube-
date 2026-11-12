@@ -118,4 +118,7 @@ export const MANAGER_STEPS: { id: string; title: string; how: string }[] = [
   { id: "m-retain", title: "Turn the pilot into a monthly retainer, then add the next brand", how: "Send the pilot report with next month's plan and the monthly fee in the same message." },
 ];
 
+/** whole dollars: for plans and estimates */
 export const usd = (n: number) => "$" + Math.round(n).toLocaleString("en-US");
+/** to the cent when there are cents: for real balances and payments */
+export const usdExact = (n: number) => "$" + n.toLocaleString("en-US", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
