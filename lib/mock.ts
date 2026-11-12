@@ -5,6 +5,8 @@
 // anything from the Settings page (or the "Edit everything" JSON box there).
 // The sample numbers and names below are made up.
 
+import { defaultJarvis, type Jarvis } from "./jarvis/types";
+
 export type Platform = "tiktok" | "instagram" | "youtube" | "facebook";
 export const PLATFORMS: Platform[] = ["tiktok", "instagram", "youtube", "facebook"];
 export const platformName: Record<Platform, string> = { tiktok: "TikTok", instagram: "Instagram", youtube: "YouTube", facebook: "Facebook" };
@@ -198,6 +200,8 @@ export type Data = {
   reports: ReportLog[];
   bots: Bots;
   dare: DarePlan;
+  /** the assistant: tasks, routines, brand leads, account history, daily finds */
+  jarvis: Jarvis;
 };
 
 // ---------------------------------------------------------------- helpers
@@ -253,6 +257,7 @@ export type NavKey = { key: string; label: string; group: "top" | "create" | "to
 
 /** every page and sidebar heading you can rename or hide in Settings */
 export const NAV: NavKey[] = [
+  { key: "/ugc/jarvis", label: "Jarvis", group: "top" },
   { key: "/", label: "Dashboard", group: "top" },
   { key: "/campaigns", label: "Campaigns", group: "top" },
   { key: "/bots", label: "Bots", group: "top" },
@@ -267,6 +272,9 @@ export const NAV: NavKey[] = [
   { key: "/variations", label: "Variations", group: "create" },
   { key: "/repurpose", label: "Repurpose", group: "create" },
   { key: "/ugc", label: "UGC research", group: "create" },
+  { key: "/ugc/editor", label: "Auto editor", group: "create" },
+  { key: "/ugc/growth", label: "Growth plan", group: "top" },
+  { key: "/ugc/connect", label: "Connections", group: "tools" },
   { key: "#tools", label: "Tools", group: "heading" },
   { key: "/accounts", label: "Accounts", group: "tools" },
   { key: "/transcribe", label: "Transcribe", group: "tools" },
@@ -350,14 +358,14 @@ function samplePosts(): Post[] {
 
 export function makeSample(): Data {
   return {
-    version: 2,
+    version: 3,
     profile: {
-      workspace: "Dremedia",
+      workspace: "Dre Media",
       logo: "",
       color: "#00BDAB",
-      first: "Dremedia",
+      first: "Andre",
       handle: "@dremedia",
-      initials: "DR",
+      initials: "AC",
       emailDomain: "yourdomain.com",
       emailPrefix: "dremedia",
       timezone: "New York",
@@ -512,6 +520,7 @@ export function makeSample(): Data {
     reports: [],
     bots: defaultBots(),
     dare: { start: "2026-11-11", done: {}, starred: [], mine: [], results: {} },
+    jarvis: defaultJarvis(),
   };
 }
 
@@ -523,6 +532,7 @@ export function makeEmpty(keep: Data): Data {
     profile: keep.profile,
     nav: keep.nav,
     bots: keep.bots,
+    jarvis: keep.jarvis,
     money: emptyMonth(now.getFullYear(), now.getMonth(), keep.money.goal, keep.money.projected),
     pastMonths: keep.pastMonths,
     stats: { streak: 0, viewsToday: "0", postsToday: 0 },

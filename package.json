@@ -8,6 +8,7 @@
     "start": "npx --yes serve@14 out"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.8.0",
     "lucide-react": "^0.453.0",
     "next": "^14.2.35",
     "react": "^18.3.1",

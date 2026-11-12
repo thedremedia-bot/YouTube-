@@ -22,6 +22,7 @@ import {
   type Money,
 } from "./mock";
 import { applyAccent } from "./color";
+import { normalizeJarvis } from "./jarvis/types";
 
 export const STORAGE_KEY = "dremedia-data-v1";
 
@@ -71,20 +72,27 @@ export function normalize(input: unknown): Data {
   d.bots = bots;
   d.brands = d.brands.filter(isObj).map((b) => ({ ...blankBrand(), ...b }));
   d.money = fixMonth(d.money);
+  d.jarvis = normalizeJarvis(input.jarvis);
   migrate(d, input);
-  d.version = 2;
+  d.version = 3;
   return d;
 }
 
 /** brings data saved by an older version of the dashboard up to date */
 function migrate(d: Data, input: Record<string, unknown>) {
   const from = typeof input.version === "number" ? input.version : 1;
+  if (from < 3) {
+    // Jarvis knows you as Andre of Dre Media (only where the old sample name was never changed)
+    const p = d.profile;
+    if (p.first === "Dremedia" || p.first === "Alex") p.first = "Andre";
+    if (p.workspace === "Dremedia") p.workspace = "Dre Media";
+    if (p.initials === "DR" || p.initials === "AL") p.initials = "AC";
+    for (const key of ["/ugc/jarvis", "/ugc/editor", "/ugc/growth", "/ugc/connect"]) if (!d.nav[key]) d.nav[key] = { label: NAV.find((n) => n.key === key)!.label, hidden: false };
+  }
   if (from < 2) {
     // the sample name was Alex: it's Dremedia now (only where it was never changed)
     const p = d.profile;
-    if (p.first === "Alex") p.first = "Dremedia";
     if (p.handle === "@alexmakesugc") p.handle = "@dremedia";
-    if (p.initials === "AL") p.initials = "DR";
     if (p.emailPrefix === "alex") p.emailPrefix = "dremedia";
     const handles: Record<string, string> = { "@alexflies": "@dremedia.flies", "@alexedits": "@dremedia.edits", "@alexfocus": "@dremedia.focus", "@alexcoins": "@dremedia.coins", "@alexbuilds": "@dremedia.builds" };
     d.accounts = d.accounts.map((a) => (handles[a.handle] ? { ...a, handle: handles[a.handle] } : a));
