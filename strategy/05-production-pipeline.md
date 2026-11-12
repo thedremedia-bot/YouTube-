@@ -12,12 +12,13 @@ way; finished videos are in the `videos/` folder.
 | Voiceover | Open-source neural text-to-speech (Piper or Kokoro) | Working. Video 1 uses the Kokoro model (Apache 2.0 licence, commercial use allowed). |
 | Word-timed captions burned in | Generated from the script and voice timing | Available |
 | Music and sound effects | Synthesised from scratch for each video | Available; fully original, so no licence is needed |
+| 3D character animation | Blender with MakeHuman (CC0) characters, rendered on CPU | Working (video 3). Slow: about 70 minutes of rendering per 30-second video |
 | Covers, profile picture, banner | Drawn in code, exported as PNG | Available |
 | Captions, descriptions, hashtags per platform | Text file in each daily package | Available |
 
 ## What I cannot do here
 
-- **No generative image or video model.** I cannot produce photorealistic AI footage or AI-painted cartoon characters in this workspace. Visuals will be designed motion graphics and flat illustration. This suits the chosen niche and avoids the AI-footage policy risk, but it is a different look from AI-video channels. If you later want AI imagery, you would need to provide access to an image or video generation service.
+- **No generative image or video model.** I cannot produce photorealistic AI footage or AI-painted cartoon characters in this workspace. Visuals are designed motion graphics or 3D animation built and rendered here. If you later want AI imagery, you would need to provide access to an image or video generation service.
 - **No human voice actor.** The voice is synthetic. If the test voice is not good enough for you, the upgrade is a paid voice service, or recording the scripts yourself.
 - **No posting.** I cannot log in to or publish on your accounts.
 
